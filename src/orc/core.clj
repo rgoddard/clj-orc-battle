@@ -15,6 +15,32 @@
       (Integer/parseInt x)
       -1)))
 
+(defn create-player [max-health max-agility max-strength]
+  {:health max-health :max-health max-health :agility max-agility :max-agility max-agility :strength max-strength :max-strength max-strength})
+
+(defn hit-player [player attr dmg]
+  (assoc player attr (max 0 (- (attr player) dmg))))
+
+(defn player-dead? [player]
+  (<= (:health player) 0))
+
+(defn show-player [player]
+  (str "You are a valiant knight with a health of "
+       (:health player)
+       ", an agility of "
+       (:agility player)
+       ", and a strength of "
+       (:strength player)))
+
+(defn level-up [player attr amt]
+  (assoc player attr (+ (attr player) amt)))
+
+(defn heal [player]
+  (assoc player
+    :health (:max-health player)
+    :agility (:max-agility player)
+    :strength (:max-strength player)))
+
 (defn monster-dead? [m]
   (<= (:health m) 0))
 
@@ -162,33 +188,6 @@
           (random-monster monsters)
           n)))
 
-(defn create-player [max-health max-agility max-strength]
-  {:health max-health :max-health max-health :agility max-agility :max-agility max-agility :strength max-strength :max-strength max-strength})
-
-(defn hit-player [player attr dmg]
-  (assoc player attr (max 0 (- (attr player) dmg))))
-
-(defn player-dead? [player]
-  (<= (:health player) 0))
-
-(defn show-player [player]
-  (str "You are a valiant knight with a health of "
-       (:health player)
-       ", an agility of "
-       (:agility player)
-       ", and a strength of "
-       (:strength player)))
-
-(defn level-up [player attr amt]
-  (assoc player attr (+ (attr player) amt)))
-
-(defn heal [player]
-  (assoc player
-    :health (:max-health player)
-    :agility (:max-agility player)
-    :strength (:max-strength player)))
-
-
 (defn pick-monster [monsters]
   (fresh-line)
   (print "Monster #:")
@@ -246,20 +245,19 @@
       "d\n" (double-swing-attack player monsters)
       (roundhouse-attack player monsters))))
 
-(defn- attack-monsters [[player monsters] n]
+(defn- attack-monsters [monsters player]
   (if (monsters-dead? monsters)
-    [player monsters]
+    monsters
     (do
       (show-monsters monsters)
-      [player (player-attack player monsters)])))
+      (player-attack player monsters))))
 
 (defn num-attacks [player]
   (inc (Math/floor (/ (max 0 (:agility player)) 15))))
 
 (defn player-round [player monsters]
-  (second
-   (reduce attack-monsters [player monsters]
-           (range (num-attacks player)))))
+   (reduce attack-monsters monsters
+           (repeat (num-attacks player) player)))
   
 (defn- attack-player [player monster]
   (if (monster-dead? monster)
