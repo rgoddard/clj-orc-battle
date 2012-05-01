@@ -9,6 +9,23 @@
 (defun randval (n)
   (1+ (random (max 1 n))))
 
+(defun init-player ()
+  (setf *player-health* 30)
+  (setf *player-agility* 30)
+  (setf *player-strength* 30))
+
+(defun player-dead ()
+  (<= *player-health* 0))
+
+(defun show-player ()
+  (fresh-line)
+  (princ "You are a valiant knight with a health of ")
+  (princ *player-health*)
+  (princ ", an agility of ")
+  (princ *player-agility*)
+  (princ " and a strength of ")
+  (princ *player-strength*))
+
 (defun monster-dead (m)
   (<= (monster-health m) 0))
 
@@ -131,22 +148,6 @@
                     (monster-show m))))
          *monsters*)))
                       
-(defun init-player ()
-  (setf *player-health* 30)
-  (setf *player-agility* 30)
-  (setf *player-strength* 30))
-
-(defun player-dead ()
-  (<= *player-health* 0))
-
-(defun show-player ()
-  (fresh-line)
-  (princ "You are a valiant knight with a health of ")
-  (princ *player-health*)
-  (princ ", an agility of ")
-  (princ *player-agility*)
-  (princ " and a strength of ")
-  (princ *player-strength*))
 
 (defun random-monster ()
   (let ((m (aref *monsters* (random (length *monsters*)))))
